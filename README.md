@@ -2,6 +2,12 @@
 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE)
 
+****
+|Author|HoshinoKun|
+|---|---
+|E-mail|hoshinokun@346pro.club
+****
+
 ## Introduction
 
 A gadget that uses a stereo camera for target recognition and ranging, both working in sync and marked on the map.
