@@ -5,7 +5,6 @@ import cv2
 import camera_config
 
 def depth(image, WIDTH, HEIGHT):
-  print WIDTH, HEIGHT
   imageL = image[0:HEIGHT, 0:WIDTH/2]
   imageR = image[0:HEIGHT, WIDTH/2:WIDTH]
 

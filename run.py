@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-from camera import camera
+from yolo import YOLO, detect_cam
 
 FLAGS = None
 
@@ -32,4 +32,4 @@ if __name__ == '__main__':
 
   FLAGS = parser.parse_args()
 
-  camera(FLAGS.camera, FLAGS.width, FLAGS.height)
+  detect_cam(YOLO(**vars(FLAGS)), FLAGS.camera, FLAGS.width, FLAGS.height, FLAGS.output)
