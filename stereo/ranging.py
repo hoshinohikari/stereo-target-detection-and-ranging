@@ -2,14 +2,14 @@
 
 import numpy as np
 import cv2
-import camera_config
+import stereo.camera_config as camera_config
 
 def depth(image, WIDTH, HEIGHT):
-  imageL = image[0:HEIGHT, 0:WIDTH/2]
-  imageR = image[0:HEIGHT, WIDTH/2:WIDTH]
+  imageL = image[0:HEIGHT, 0:WIDTH//2]
+  imageR = image[0:HEIGHT, WIDTH//2:WIDTH]
 
-  cv2.imshow("imageL", imageL)
-  cv2.imshow("imageR", imageR)
+  #cv2.imshow("imageL", imageL)
+  #cv2.imshow("imageR", imageR)
 
   img1_rectified = cv2.remap(imageL, camera_config.left_map1, camera_config.left_map2, cv2.INTER_LINEAR)
   img2_rectified = cv2.remap(imageR, camera_config.right_map1, camera_config.right_map2, cv2.INTER_LINEAR)  #依据MATLAB测量数据重建无畸变图片

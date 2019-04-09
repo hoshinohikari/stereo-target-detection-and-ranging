@@ -10,9 +10,9 @@
 
 ## Introduction
 
-A gadget that uses a stereo camera for target recognition and ranging, both working in sync and marked on the image.
-The combined work based on the two projects of [hoshinohikari/keras-yolo3-py2](https://github.com/hoshinohikari/keras-yolo3-py2) and [hoshinohikari/Double-target](https://github.com/hoshinohikari/Double-target)
-Nanchang Aviation University Graduation design work in 2019.
+A gadget that uses a stereo camera for target recognition and ranging, both working in sync and marked on the image.  
+The combined work based on the two projects of [hoshinohikari/keras-yolo3-py2](https://github.com/hoshinohikari/keras-yolo3-py2) and [hoshinohikari/Double-target](https://github.com/hoshinohikari/Double-target)  
+Nanchang Aviation University Graduation design work in 2019.  
 
 ## Todo
 1. At present, stereo ranging uses SGBM in OpenCV, and object detection uses keras-yolo3.
@@ -22,6 +22,17 @@ Nanchang Aviation University Graduation design work in 2019.
 1. The distance measurement section is currently complete.
 
 ---
+
+## Some thing you need to do before you start
+
+1. Buy or make a stereo camera,and test out its map, you can refer to my github([hoshinohikari/Double-target](https://github.com/hoshinohikari/Double-target))
+2. Install the conda like minoconda or anaconda,and install  
+```
+Keras
+Tensorflow
+OpenCV
+Opencv-contrib-python
+```
 
 ## Quick Start
 
@@ -53,7 +64,12 @@ optional arguments:
 ## Some issues to know
 
 1. The test environment is
-    - Python 2.7.15
+    - Python 2.7.15(Miniconda)
+    - Keras 2.1.6
+    - tensorflow 1.12.0
+    - OpenCV 3.4.4
+or
+    - Python 3.6.8(Miniconda)
     - Keras 2.1.6
     - tensorflow 1.12.0
     - OpenCV 3.4.4

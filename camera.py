@@ -12,6 +12,8 @@ def camera(image, WIDTH, HEIGHT):
 
   threeD = distance(disparity)
 
-  cv2.imshow("depth", disp)
+  #cv2.imshow("depth", disp)
 
   cv2.setMouseCallback("depth", callbackFunc, None)  #点击depth图触发函数
+
+  return disp, threeD

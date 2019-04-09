@@ -18,7 +18,7 @@ from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
 from yolo3.utils import letterbox_image
 import os
 from keras.utils import multi_gpu_model
-from camera import camera
+from stereo.ranging import depth, distance
 
 class YOLO(object):
     _defaults = {
@@ -151,7 +151,6 @@ class YOLO(object):
             bottom = min(isize[0], np.floor(bottom + 0.5).astype('int32'))
             right = min(isize[1], np.floor(right + 0.5).astype('int32'))
             print(label, (left, top), (right, bottom))
-            print('color {}'.format(self.colors[c]))
 
             #if top - label_size[1] >= 0:
             #    text_origin = np.array([left, top - label_size[1]])
@@ -160,20 +159,22 @@ class YOLO(object):
 
             # My kingdom for a good redistributable image drawing library.
             for i in range(thickness):
-                cv2.rectangle(image, (left + i, top + i), (right - i, bottom - i), self.colors[c], thickness = 2)
+                cv2.rectangle(image, (left + i, top + i), (right - i, bottom - i), self.colors[c], thickness = 1)
+                #print 'x = {} and y = {}'.format((left + right) / 2 + 1, (top + bottom) / 2 + 1)
+                cv2.rectangle(image, ((left + right) // 2 + 1 + i, (top + bottom) // 2 + 1 + i), ((left + right) // 2 - 1 - i, (top + bottom) // 2 - 1 - i), self.colors[c], thickness = 1)
                 #draw.rectangle(
                 #    [left + i, top + i, right - i, bottom - i],
                 #    outline=self.colors[c])
             #draw.rectangle(
             #    [tuple(text_origin), tuple(text_origin + label_size)],
             #    fill=self.colors[c])
-            #cv2.putText(image, label, (left + i, top + i), cv2.FONT_HERSHEY_SIMPLEX, 1, self.colors[c])
+            cv2.putText(image, label, (left + i, top - i), cv2.FONT_HERSHEY_SIMPLEX, 1, self.colors[c], 2)
             #draw.text(text_origin, label, fill=(0, 0, 0), font=font)
             #del draw
 
         end = timer()
         print(end - start)
-        return image
+        return image, out_boxes, self.colors
 
     def close_session(self):
         self.sess.close()
@@ -196,7 +197,26 @@ def detect_video(yolo, video_path, output_path=""):
     prev_time = timer()
     while True:
         return_value, frame = vid.read()
-        result = yolo.detect_image(frame)
+        onject = frame[0:HEIGHT, 0:WIDTH//2]
+        result, out_boxes, colors = yolo.detect_image(onject)
+        disparity, disp = depth(frame, int(WIDTH), int(HEIGHT))
+        threeD = distance(disparity)
+        isize = frame.shape
+        thickness = (isize[0] + isize[1]) // 300
+
+        for c in range(len(out_boxes)):
+            box = out_boxes[c]
+            top, left, bottom, right = box
+            top = max(0, np.floor(top + 0.5).astype('int32'))
+            left = max(0, np.floor(left + 0.5).astype('int32'))
+            bottom = min(isize[0], np.floor(bottom + 0.5).astype('int32'))
+            right = min(isize[1], np.floor(right + 0.5).astype('int32'))
+
+            for i in range(thickness):
+                cv2.rectangle(disp, (left + i, top + i), (right - i, bottom - i), colors[c], thickness = 1)
+
+        cv2.imshow("depth", disp)
+
         curr_time = timer()
         exec_time = curr_time - prev_time
         prev_time = curr_time
@@ -236,8 +256,26 @@ def detect_cam(yolo, camera_num, WIDTH, HEIGHT, output_path=""):
     prev_time = timer()
     while True:
         return_value, frame = vid.read()
-        result = yolo.detect_image(frame)
-        camera(frame, WIDTH, HEIGHT)
+        onject = frame[0:HEIGHT, 0:WIDTH//2]
+        result, out_boxes, colors = yolo.detect_image(onject)
+        disparity, disp = depth(frame, int(WIDTH), int(HEIGHT))
+        threeD = distance(disparity)
+        isize = frame.shape
+        thickness = (isize[0] + isize[1]) // 300
+
+        for c in range(len(out_boxes)):
+            box = out_boxes[c]
+            top, left, bottom, right = box
+            top = max(0, np.floor(top + 0.5).astype('int32'))
+            left = max(0, np.floor(left + 0.5).astype('int32'))
+            bottom = min(isize[0], np.floor(bottom + 0.5).astype('int32'))
+            right = min(isize[1], np.floor(right + 0.5).astype('int32'))
+
+            for i in range(thickness):
+                cv2.rectangle(disp, (left + i, top + i), (right - i, bottom - i), colors[c], thickness = 1)
+
+        cv2.imshow("depth", disp)
+
         curr_time = timer()
         exec_time = curr_time - prev_time
         prev_time = curr_time
