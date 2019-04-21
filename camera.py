@@ -56,7 +56,7 @@ def camera(frame, HEIGHT, WIDTH, yolo):
 
         cv2.setMouseCallback("depth", callbackFunc, None)  #点击depth图触发函数
 
-    '''for c in range(len(out_boxes)):
+    for c in range(len(out_boxes)):
         box = out_boxes[c]
         top, left, bottom, right = box
         top = max(0, np.floor(top + 0.5).astype('int32'))
@@ -65,18 +65,36 @@ def camera(frame, HEIGHT, WIDTH, yolo):
         right = min(isize[1], np.floor(right + 0.5).astype('int32'))
 
         i = 0
+        j = 0
         average_three = []
         while(i < randomnum):
             ran1 = random.randint(-20,21)
             ran2 = random.randint(-20,21)
-
             x_r = (left + right) // 2 + ran1
             y_r = (top + bottom) // 2 + ran2
+
+            if (x_r > 1279):
+                x_r = 1279
+            if (y_r > 959):
+                y_r = 959
 
             if (disp[y_r, x_r] >= 20):
                 average_three.append(threeD[y_r][x_r][2])
                 i = i + 1
+                #print('point is [{}, {}] threeD is {}'.format(x_r, y_r, threeD[y_r][x_r]))
+            
+            if (j > 50):
+                break
 
-        print('average_three is {}'.format(Get_Average(average_three)))'''
+            j = j + 1
+
+        '''for h in range(len(average_three)):
+            if (average_three[h] > Get_Average(average_three) * 1.5):
+                average_three.pop(h)'''
+        extent = Get_Average(average_three)
+        extent_s = str(extent)
+        #print('average_three is {}'.format(extent_s))
+        #print(type(extent_s))
+        cv2.putText(result, extent_s, ((left + right) // 2, (top + bottom) // 2), cv2.FONT_HERSHEY_SIMPLEX, 1, colors[c], 2)
 
     return result

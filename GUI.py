@@ -1,7 +1,9 @@
 import sys
+import argparse
 from PyQt5 import QtWidgets
 from Ui_camera import Ui_Form
-import os
+from cache import detect_cam ,detect_video
+from yolo import YOLO
 
 get_camera_num = '0'
 inputfile = ''
@@ -13,7 +15,10 @@ class Test(QtWidgets.QDialog):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
     def slot1(self):
-        os.popen('python run.py --camera ' + get_camera_num)
+        parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
+        FLAGS = parser.parse_args()
+        print('python run.py --camera ' + get_camera_num)
+        detect_cam(YOLO(**vars(FLAGS)), eval(get_camera_num), 2560, 960, "")
     def slot2(self):
         global get_camera_num
         get_camera_num = self.ui.comboBox.currentText()[-1]
@@ -32,7 +37,10 @@ class Test(QtWidgets.QDialog):
             return
         self.ui.lineEdit_2.setText(outputfile)
     def slot5(self):
-        os.popen('python run.py --input ' + inputfile + ' --output ' + outputfile)
+        parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
+        FLAGS = parser.parse_args()
+        print('python run.py --input ' + inputfile + ' --output ' + outputfile)
+        detect_video(YOLO(**vars(FLAGS)), inputfile, outputfile)
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = Test()

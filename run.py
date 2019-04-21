@@ -38,11 +38,12 @@ if __name__ == '__main__':
 
   FLAGS = parser.parse_args()
 
-  if ("input" in FLAGS):
+  if ("input" in FLAGS and FLAGS.input != './path2your_video'):
     print("Video mode")
     detect_video(YOLO(**vars(FLAGS)), FLAGS.input, FLAGS.output)
   if ("camera" in FLAGS):
     print("Camera mode")
+    print(FLAGS.camera, FLAGS.width, FLAGS.height, FLAGS.output)
     detect_cam(YOLO(**vars(FLAGS)), FLAGS.camera, FLAGS.width, FLAGS.height, FLAGS.output)
   else:
     print("Must specify at least video_input_path.  See usage with --help.")
