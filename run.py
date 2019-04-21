@@ -2,7 +2,7 @@
 
 import argparse
 from yolo import YOLO
-from cache import detect_cam
+from cache import detect_cam ,detect_video
 
 FLAGS = None
 
@@ -31,6 +31,18 @@ if __name__ == '__main__':
     help = "[Optional] Video output path"
   )
 
+  parser.add_argument(
+    "--input", nargs='?', type=str, required=False, default='./path2your_video',
+    help = "Video input path"
+  )
+
   FLAGS = parser.parse_args()
 
-  detect_cam(YOLO(**vars(FLAGS)), FLAGS.camera, FLAGS.width, FLAGS.height, FLAGS.output)
+  if ("input" in FLAGS):
+    print("Video mode")
+    detect_video(YOLO(**vars(FLAGS)), FLAGS.input, FLAGS.output)
+  if ("camera" in FLAGS):
+    print("Camera mode")
+    detect_cam(YOLO(**vars(FLAGS)), FLAGS.camera, FLAGS.width, FLAGS.height, FLAGS.output)
+  else:
+    print("Must specify at least video_input_path.  See usage with --help.")
