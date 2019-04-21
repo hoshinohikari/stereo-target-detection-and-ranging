@@ -16,9 +16,7 @@ import cv2
 
 from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
 from yolo3.utils import letterbox_image
-import os
 from keras.utils import multi_gpu_model
-from stereo.ranging import depth, distance
 
 class YOLO(object):
     _defaults = {
@@ -79,7 +77,7 @@ class YOLO(object):
                 num_anchors/len(self.yolo_model.output) * (num_classes + 5), \
                 'Mismatch between model and given anchor and class sizes'
 
-        print('{} model, anchors, and classes loaded.'.format(model_path))
+        #print('{} model, anchors, and classes loaded.'.format(model_path))
 
         # Generate colors for drawing bounding boxes.
         hsv_tuples = [(float(x) / len(self.class_names), 1., 1.)
@@ -115,7 +113,7 @@ class YOLO(object):
 
         image_data = np.array(boxed_image, dtype='float32')
 
-        print(boxed_image.shape)
+        #print(boxed_image.shape)
         image_data /= 255.
         image_data = np.expand_dims(image_data, 0)  # Add batch dimension.
 
@@ -129,7 +127,7 @@ class YOLO(object):
                 K.learning_phase(): 0
             })
 
-        print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
+        #print('Found {} boxes for {}'.format(len(out_boxes), 'img'))
 
         #font = ImageFont.truetype(font='font/FiraMono-Medium.otf',
         #            size=np.floor(3e-2 * isize[1] + 0.5).astype('int32'))
@@ -145,12 +143,12 @@ class YOLO(object):
             #label_size = draw.textsize(label, font)
 
             top, left, bottom, right = box
-            print(box)
+            #print(box)
             top = max(0, np.floor(top + 0.5).astype('int32'))
             left = max(0, np.floor(left + 0.5).astype('int32'))
             bottom = min(isize[0], np.floor(bottom + 0.5).astype('int32'))
             right = min(isize[1], np.floor(right + 0.5).astype('int32'))
-            print(label, (left, top), (right, bottom))
+            #print(label, (left, top), (right, bottom))
 
             #if top - label_size[1] >= 0:
             #    text_origin = np.array([left, top - label_size[1]])
@@ -161,7 +159,7 @@ class YOLO(object):
             for i in range(thickness):
                 cv2.rectangle(image, (left + i, top + i), (right - i, bottom - i), self.colors[c], thickness = 1)
                 #print 'x = {} and y = {}'.format((left + right) / 2 + 1, (top + bottom) / 2 + 1)
-                cv2.rectangle(image, ((left + right) // 2 + 1 + i, (top + bottom) // 2 + 1 + i), ((left + right) // 2 - 1 - i, (top + bottom) // 2 - 1 - i), self.colors[c], thickness = 1)
+                #cv2.rectangle(image, ((left + right) // 2 + 1 + i, (top + bottom) // 2 + 1 + i), ((left + right) // 2 - 1 - i, (top + bottom) // 2 - 1 - i), self.colors[c], thickness = 1)
                 #draw.rectangle(
                 #    [left + i, top + i, right - i, bottom - i],
                 #    outline=self.colors[c])
@@ -173,127 +171,8 @@ class YOLO(object):
             #del draw
 
         end = timer()
-        print(end - start)
+        #print(end - start)
         return image, out_boxes, self.colors
 
     def close_session(self):
         self.sess.close()
-
-def detect_video(yolo, video_path, output_path=""):
-    vid = cv2.VideoCapture(video_path)
-    if not vid.isOpened():
-        raise IOError("Couldn't open webcam or video")
-    video_FourCC    = int(vid.get(cv2.CAP_PROP_FOURCC))
-    video_fps       = vid.get(cv2.CAP_PROP_FPS)
-    video_size      = (int(vid.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                        int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-    isOutput = True if output_path != "" else False
-    if isOutput:
-        print("!!! TYPE:", type(output_path), type(video_FourCC), type(video_fps), type(video_size))
-        out = cv2.VideoWriter(output_path, video_FourCC, video_fps, video_size)
-    accum_time = 0
-    curr_fps = 0
-    fps = "FPS: ??"
-    prev_time = timer()
-    while True:
-        return_value, frame = vid.read()
-        onject = frame[0:HEIGHT, 0:WIDTH//2]
-        result, out_boxes, colors = yolo.detect_image(onject)
-        disparity, disp = depth(frame, int(WIDTH), int(HEIGHT))
-        threeD = distance(disparity)
-        isize = frame.shape
-        thickness = (isize[0] + isize[1]) // 300
-
-        for c in range(len(out_boxes)):
-            box = out_boxes[c]
-            top, left, bottom, right = box
-            top = max(0, np.floor(top + 0.5).astype('int32'))
-            left = max(0, np.floor(left + 0.5).astype('int32'))
-            bottom = min(isize[0], np.floor(bottom + 0.5).astype('int32'))
-            right = min(isize[1], np.floor(right + 0.5).astype('int32'))
-
-            for i in range(thickness):
-                cv2.rectangle(disp, (left + i, top + i), (right - i, bottom - i), colors[c], thickness = 1)
-
-        cv2.imshow("depth", disp)
-
-        curr_time = timer()
-        exec_time = curr_time - prev_time
-        prev_time = curr_time
-        accum_time = accum_time + exec_time
-        curr_fps = curr_fps + 1
-        if accum_time > 1:
-            accum_time = accum_time - 1
-            fps = "FPS: " + str(curr_fps)
-            curr_fps = 0
-        cv2.putText(result, text=fps, org=(3, 15), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                    fontScale=0.50, color=(255, 0, 0), thickness=2)
-        cv2.namedWindow("result", cv2.WINDOW_NORMAL)
-        cv2.imshow("result", result)
-        if isOutput:
-            out.write(result)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    yolo.close_session()
-
-def detect_cam(yolo, camera_num, WIDTH, HEIGHT, output_path=""):
-    vid = cv2.VideoCapture(camera_num)
-    if not vid.isOpened():
-        raise IOError("Couldn't open webcam or video")
-    vid.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
-    vid.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
-    video_FourCC    = int(vid.get(cv2.CAP_PROP_FOURCC))
-    video_fps       = vid.get(cv2.CAP_PROP_FPS)
-    video_size      = (int(vid.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                        int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-    isOutput = True if output_path != "" else False
-    if isOutput:
-        print("!!! TYPE:", type(output_path), type(video_FourCC), type(video_fps), type(video_size))
-        out = cv2.VideoWriter(output_path, video_FourCC, video_fps, video_size)
-    accum_time = 0
-    curr_fps = 0
-    fps = "FPS: ??"
-    prev_time = timer()
-    while True:
-        return_value, frame = vid.read()
-        onject = frame[0:HEIGHT, 0:WIDTH//2]
-        result, out_boxes, colors = yolo.detect_image(onject)
-        disparity, disp = depth(frame, int(WIDTH), int(HEIGHT))
-        threeD = distance(disparity)
-        isize = frame.shape
-        thickness = (isize[0] + isize[1]) // 300
-
-        for c in range(len(out_boxes)):
-            box = out_boxes[c]
-            top, left, bottom, right = box
-            top = max(0, np.floor(top + 0.5).astype('int32'))
-            left = max(0, np.floor(left + 0.5).astype('int32'))
-            bottom = min(isize[0], np.floor(bottom + 0.5).astype('int32'))
-            right = min(isize[1], np.floor(right + 0.5).astype('int32'))
-
-            for i in range(thickness):
-                cv2.rectangle(disp, (left + i, top + i), (right - i, bottom - i), colors[c], thickness = 1)
-
-        cv2.imshow("depth", disp)
-
-        curr_time = timer()
-        exec_time = curr_time - prev_time
-        prev_time = curr_time
-        accum_time = accum_time + exec_time
-        curr_fps = curr_fps + 1
-        if accum_time > 1:
-            accum_time = accum_time - 1
-            fps = "FPS: " + str(curr_fps)
-            curr_fps = 0
-        cv2.putText(result, text=fps, org=(3, 15), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                    fontScale=0.50, color=(255, 0, 0), thickness=2)
-        cv2.namedWindow("result", cv2.WINDOW_NORMAL)
-        cv2.imshow("result", result)
-        if isOutput:
-            out.write(result)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    yolo.close_session()
-    vid.release()
-    cv2.destroyAllWindows()
-

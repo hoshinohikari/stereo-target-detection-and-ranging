@@ -67,7 +67,7 @@ optional arguments:
     - Python 2.7.15(Miniconda)
     - Keras 2.1.6
     - tensorflow 1.12.0
-    - OpenCV 3.4.4
+    - OpenCV 3.4.4  
 or
     - Python 3.6.8(Miniconda)
     - Keras 2.1.6

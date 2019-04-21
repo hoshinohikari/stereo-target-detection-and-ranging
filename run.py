@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-from yolo import YOLO, detect_cam
+from yolo import YOLO
+from cache import detect_cam
 
 FLAGS = None
 
