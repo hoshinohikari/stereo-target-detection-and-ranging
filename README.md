@@ -60,6 +60,10 @@ optional arguments:
   --height [HEIGHT]  [Optional] Camera height
   --output [OUTPUT]  [Optional] Video output path
 ```
+You can also use GUI.py, which depends on pyqt5  
+```
+python GUI.py
+```
 
 ## Some issues to know
 

@@ -56,7 +56,7 @@ def camera(frame, HEIGHT, WIDTH, yolo):
 
         cv2.setMouseCallback("depth", callbackFunc, None)  #点击depth图触发函数
 
-    for c in range(len(out_boxes)):
+    '''for c in range(len(out_boxes)):
         box = out_boxes[c]
         top, left, bottom, right = box
         top = max(0, np.floor(top + 0.5).astype('int32'))
@@ -73,10 +73,10 @@ def camera(frame, HEIGHT, WIDTH, yolo):
             x_r = (left + right) // 2 + ran1
             y_r = (top + bottom) // 2 + ran2
 
-            if (disp[y_r, x_r] >= 200):
+            if (disp[y_r, x_r] >= 20):
                 average_three.append(threeD[y_r][x_r][2])
                 i = i + 1
 
-        print('average_three is {}'.format(Get_Average(average_three)))
+        print('average_three is {}'.format(Get_Average(average_three)))'''
 
     return result
