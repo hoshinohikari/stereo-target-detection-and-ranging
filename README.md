@@ -13,13 +13,15 @@
 A gadget that uses a stereo camera for target recognition and ranging, both working in sync and marked on the image.  
 The combined work based on the two projects of [hoshinohikari/keras-yolo3-py2](https://github.com/hoshinohikari/keras-yolo3-py2) and [hoshinohikari/Double-target](https://github.com/hoshinohikari/Double-target)  
 Nanchang Aviation University Graduation design work in 2019.  
+Please read the contents of Some issues to know before using.  
 
 ## Todo
-1. At present, stereo ranging uses SGBM in OpenCV, and object detection uses keras-yolo3.
-2. In the future, stereo matching may be replaced with PSMNet.
+1. ~~At present, stereo ranging uses SGBM in OpenCV, and object detection uses keras-yolo3.~~ (completed)  
+2. In the future, stereo matching may be replaced with PSMNet.  
+3. Adjust convert to make it compatible with Python 3.7  
 
 ## Progressing
-1. The distance measurement section is currently complete.
+1. The distance measurement section is currently complete.  
 
 ---
 
@@ -79,3 +81,5 @@ or
     - OpenCV 3.4.4
 
 2. Theoretically supports multi-GPU, but I can't test it, so I didn't add this option.
+
+3. [convert.py](./convert.py) Can't used in Python 3.7

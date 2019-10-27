@@ -50,6 +50,8 @@ def unique_config_sections(config_file):
                 _section = section + '_' + str(section_counters[section])
                 section_counters[section] += 1
                 line = line.replace(section, _section)
+            #line = line.encode()
+            #print(type(line))
             output_stream.write(line)
     output_stream.seek(0)
     return output_stream
@@ -82,6 +84,8 @@ def _main(args):
     print('Parsing Darknet config.')
     unique_config_file = unique_config_sections(config_path)
     cfg_parser = configparser.ConfigParser()
+    #print("unique_config_file = ", end='')
+    #print(unique_config_file)
     cfg_parser.read_file(unique_config_file)
 
     print('Creating Keras model.')
